@@ -1,0 +1,20 @@
+// lfollow_motors.ic
+
+void forward() {
+    fdL();
+    fdR();
+}
+void left() {
+    fdR();
+    off(MOTOR_L);
+}
+void right() {
+    fdL();
+    off(MOTOR_R);
+}
+void fdR() {
+    motor(MOTOR_R,MOTOR_R_SPEED);
+}
+void fdL() {
+    motor(MOTOR_L,MOTOR_L_SPEED);
+}

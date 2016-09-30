@@ -1,0 +1,72 @@
+// lfollow_sensors.ic
+
+int tapeR() {
+    return analog(RSENS) < R_THRESH;
+}
+int tapeL() {
+    return analog(LSENS) < L_THRESH;
+}
+
+
+int tapeValL = 0;
+int tapeValR = 0;
+int offValL = 0;
+int offValR = 0;
+void sens_config() {
+    light_on();
+    while(!start_button()) {
+        printf("put L over tape\nLSENS = %d",analog(LSENS));
+        sleep(.1);
+    }
+    tapeValL = analog(LSENS);
+    beep();
+    sleep(1.0);
+    
+    while(!start_button()) {
+        printf("take L off tape\nLSENS = %d",analog(LSENS));
+        sleep(.1);}
+    offValL = analog(LSENS);
+    beep();
+    sleep(1.0);
+    
+    while(!start_button()) {
+        printf("put R over tape\nRSENS = %d",analog(RSENS));
+        sleep(.1);
+    }
+    tapeValR = analog(RSENS);
+    beep();
+    sleep(1.0);
+    
+    while(!start_button()) {
+        printf("take R off tape\nRSENS = %d",analog(RSENS));
+        sleep(.1);}
+    offValR = analog(RSENS);
+    beep();
+    sleep(1.0);
+    
+    L_THRESH = (tapeValL+offValL)/2;
+    R_THRESH = (tapeValR+offValR)/2;
+    printf("New thresholds:\nL:%d | R: %d",L_THRESH, R_THRESH);
+    
+}
+
+void light_config() {
+    while(!stop_button()) {
+        while(!start_button()) {
+            printf("LSENS: %d | RSENS: %d\nKNOB: %d",analog(LSENS),analog(RSENS),knob());
+            motor(LIGHT,knob());
+            //sleep(.5);
+            if (stop_button()) {
+                    break;
+            }
+        }
+        LIGHT_POWER = knob();
+        printf("LPOW set to %d",LIGHT_POWER);
+        beep();
+        sleep(.5);
+    }
+    printf("Done.");
+}
+void light_on() {
+    motor(LIGHT,LIGHT_POWER);
+}
