@@ -18,3 +18,7 @@ void fdR() {
 void fdL() {
     motor(MOTOR_L,MOTOR_L_SPEED);
 }
+void stop() {
+	off(MOTOR_L);
+	off(MOTOR_R);
+}

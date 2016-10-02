@@ -15,8 +15,12 @@ persistent int L_THRESH = 30; //configure with sens_config()
 persistent int R_THRESH = 31; //configure with sens_config()
 
 void main() {
-    beep();
     light_on();
+    bounce();
+}
+
+void closefollow() {
+    beep();
     printf("LT: %d\nRT: %d",L_THRESH,R_THRESH);
     sleep(1.5);
     while(!stop_button()) {
@@ -36,4 +40,58 @@ void main() {
         }
     }
     ao();
+}
+
+// algorithm to "bounce" two widely set sensors off of a line in between them.
+// we'll use integer states to keep track of what we're doing.
+// Might make too many comparisons to be fast; will optimize if needed.
+
+// when we hit the line with one of the sensors, we turn until both sensors are
+// on the line, and then turn the other way until both sensors are on the line,
+// and then turn the other way...
+// Using states should make saying "turn until we're both on the line again"
+// easier, since we need the sensor to leave the line and then get back on it.
+int leftFromLine = 1; // turning left from a position wholly on the line
+int leftFromBlank = 2; // turning left from a position with sens off the line
+int rightFromLine = 3; // sure would be nice if enums were supported...
+int rightFromBlank = 4;
+int initialFwd = 5; // initial state, we don't know whch way to bounce.
+int s; // current state
+void bounce() {
+    // we start out with the line between the sensors
+    forward();
+    s = initialFwd;
+    while(!stop_button()) {
+        if (s == initialFwd) {
+            if (tapeL()&tapeR()) {
+                beep();
+                stop();
+                // we're starting near 90 degrees to the path, so we've got like
+                // a 50% chance of going off the line entirely.  Let's just quit
+                // so we can catch the robot and get back to testing.
+            }
+            // tapeL()&&tapeR() is invalid here, so we'll just go left if so
+            if (tapeL()) {
+                s = leftFromLine;
+                left();
+            } else if (tapeR()) {
+                s = rightFromLine;
+                right();
+            }
+        }
+        if (s == leftFromLine && !tapeR()) {
+            s = leftFromBlank;
+        }
+        if (s == leftFromBlank && tapeR()) {
+            s = rightFromLine;
+            right();
+        }
+        if (s == rightFromLine && !tapeL()) {
+            s = rightFromBlank;
+        }
+        if (s == rightFromBlank && tapeL()) {
+            s = leftFromLine;
+            left();
+        }
+    }
 }
