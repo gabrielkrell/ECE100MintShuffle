@@ -8,6 +8,7 @@ persistent int RSENS = 3;
 // ---- config: ---
 persistent int MOTOR_R_SPEED = 100; // adjust these to fix drift
 persistent int MOTOR_L_SPEED = 100;
+persistent int DEBUG_MODE = 1; //beep to indicate states?
 
 // ----- variables: -----
 persistent int LIGHT_POWER = 40; // configure with light_config()
@@ -51,16 +52,17 @@ void closefollow() {
 // and then turn the other way...
 // Using states should make saying "turn until we're both on the line again"
 // easier, since we need the sensor to leave the line and then get back on it.
-int leftFromLine = 1; // turning left from a position wholly on the line
-int leftFromBlank = 2; // turning left from a position with sens off the line
-int rightFromLine = 3; // sure would be nice if enums were supported...
-int rightFromBlank = 4;
-int initialFwd = 5; // initial state, we don't know whch way to bounce.
+int leftFromLine = 0; // turning left from a position wholly on the line
+int leftFromBlank = 1; // turning left from a position with sens off the line
+int rightFromLine = 2; // sure would be nice if enums were supported...
+int rightFromBlank = 3;
+int initialFwd = 4; // initial state, we don't know whch way to bounce.
 int s; // current state
 void bounce() {
     // we start out with the line between the sensors
     forward();
     s = initialFwd;
+    if (DEBUG_MODE) { start_process(bounceTones()); }
     while(!stop_button()) {
         if (s == initialFwd) {
             if (tapeL()&tapeR()) {
@@ -94,4 +96,17 @@ void bounce() {
             left();
         }
     }
+}
+
+/// we're in D major!
+float tones[] = {293.7, 370.0, 440.0, 554.4, 587.3};
+void bounceTones() {
+	set_beeper_pitch(tones[s]);
+	beeper_on();
+	defer();
+	while(!stop_button()) {
+		set_beeper_pitch(tones[s]);
+		defer();
+	}
+	beeper_off();
 }
