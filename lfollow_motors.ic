@@ -1,22 +1,32 @@
 // lfollow_motors.ic
 
 void forward() {
-    fdL();
-    fdR();
+	fdL();
+	fdR();
+}
+void backward() {
+	bkL();
+	bkR();
 }
 void left() {
-    fdR();
-    off(MOTOR_L);
+	fdR();
+	bkL();
 }
 void right() {
-    fdL();
-    off(MOTOR_R);
+	fdL();
+	bkR();
 }
 void fdR() {
-    motor(MOTOR_R,MOTOR_R_SPEED);
+	motor(MOTOR_R,MOTOR_R_SPEED);
 }
 void fdL() {
-    motor(MOTOR_L,MOTOR_L_SPEED);
+	motor(MOTOR_L,MOTOR_L_SPEED);
+}
+void bkL() {
+	motor(MOTOR_L,-1*MOTOR_L_SPEED);
+}
+void bkR() {
+	motor(MOTOR_R,-1*MOTOR_R_SPEED);
 }
 void stop() {
 	off(MOTOR_L);
