@@ -3,84 +3,110 @@
 int tapeR() {
 	return analog(RSENS) < R_THRESH;
 }
+
 int tapeL() {
 	return analog(LSENS) < L_THRESH;
 }
 
 
-int tapeValL = 0;
-int tapeValR = 0;
-int offValL = 0;
-int offValR = 0;
 void sens_config() {
+	int tapeValL;
+	int tapeValR;
+	int offValL;
+	int offValR;
+
 	light_on();
 	
-	confirm_sens("put L over tape\nLSENS = %d",LSENS,0);
+	confirm_sens("put L over tape LSENS = %d\n",LSENS,0);
 	tapeValL = analog(LSENS);
 	
-	confirm_sens("take L off tape\nLSENS = %d",LSENS,0);
+	confirm_sens("take L off tape LSENS = %d\n",LSENS,0);
 	offValL = analog(LSENS);
 	
-	confirm_sens("put R over tape\nLSENS = %d",RSENS,0);
+	confirm_sens("put R over tape LSENS = %d\n",RSENS,0);
 	tapeValR = analog(RSENS);
 	
-	confirm_sens("take R off tape\nLSENS = %d",RSENS,0);
+	confirm_sens("take R off tape LSENS = %d\n",RSENS,0);
 	offValR = analog(RSENS);
 	
 	L_THRESH = (tapeValL+offValL)/2;
 	R_THRESH = (tapeValR+offValR)/2;
-	printf("New thresholds:\nL:%d | R: %d",L_THRESH, R_THRESH);
+	printf("New thresholds: L:%d | R: %d\n",L_THRESH, R_THRESH);
 	
 }
 
-int dispPID;
 void light_config() {
-	/*dispPID = 0;//start_process(printf("LSENS: %d | RSENS: %d\nKNOB: %d",analog(LSENS),analog(RSENS),knob()));
-	rval = -1;
+	int dispPID = start_process(lightDisplay());
 	while(start_button() || stop_button()) {} // release buttons before pressing
-	while(rval==-1){
-		motor(LIGHT,knob());
+	while(1){
+		motor(LIGHT,norm_knob());
 		if (start_button()) {
-			rval = 0;  // continue
+			LIGHT_POWER = norm_knob();
+			kill_process(dispPID);
+			printf("LPOW set to %d",LIGHT_POWER);
 			tone(500.0,0.3);
+			break;
 		}
 		if (stop_button()) {
-			rval = 1; // cancel
 			beep();
+			kill_process(dispPID);
+			break;
 		}
 	}
-	if (rval==0){
-		LIGHT_POWER = knob();
-		printf("LPOW set to %d",LIGHT_POWER);
-	}*/
+	printf("\n\n");
 }
+
+void lightDisplay() {
+	printf("L: %d /R: %d KNOB: %d\n",analog(LSENS),analog(RSENS),norm_knob());
+	msleep(100L);
+}
+
 void light_on() {
 	motor(LIGHT,LIGHT_POWER);
+	LIGHT_STATE = 1;
+}
+
+void light_off() {
+	off(LIGHT);
+	LIGHT_STATE=0;
+}
+
+void toggle_light() {
+	if (LIGHT_STATE) {
+		light_on();
+	} else {
+		light_off();
+	}
+	LIGHT_STATE = !LIGHT_STATE;
 }
 
 int scrUpdatePID;
 int rval;
 int confirm_sens(char message[], int sensorPin, int cancellable) {
-int scrUpdatePID = start_process(
-								 sens_updates(message, sensorPin),1,250);
-								 rval = -1;
-								 while(start_button() || stop_button()) {} // release buttons before pressing
-								 while(rval==-1){
-									 if (start_button()) {
-										 rval = 0;  // continue
-										 tone(500.0,0.3);
-									 }
-									 if (cancellable && stop_button()) {
-										 rval = 1; // cancel
-										 beep();
-									 }
-								 }
-								 kill_process(scrUpdatePID);
-								 return rval;
-								 }
-								 
-								 void sens_updates(char message[], int sensorPin) {
-									 printf(message,analog(sensorPin));
-									 msleep(500L); // sleep for .5 seconds
-									 // will hopefully fix the difficult-to-read screen issue
-								 }
+	int scrUpdatePID = start_process(
+									 sens_updates(message, sensorPin),1,250);
+	rval = -1;
+	while(start_button() || stop_button()) {} // release buttons before pressing
+	while(rval==-1){
+		if (start_button()) {
+			rval = 0;  // continue
+			tone(500.0,0.3);
+		}
+		if (cancellable && stop_button()) {
+			rval = 1; // cancel
+			beep();
+		}
+	}
+	kill_process(scrUpdatePID);
+	return rval;
+}
+
+void sens_updates(char message[], int sensorPin) {
+	printf(message,analog(sensorPin));
+	msleep(500L); // sleep for .5 seconds
+	// will hopefully fix the difficult-to-read screen issue
+}
+
+int norm_knob() {
+	return knob()*100/255; // no casting, much better.
+}

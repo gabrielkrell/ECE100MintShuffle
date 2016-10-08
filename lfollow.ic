@@ -1,45 +1,23 @@
-// ---- ports: ----
-persistent int MOTOR_R = 1;
-persistent int MOTOR_L = 2;
-persistent int LIGHT = 3; // treated as a motor so we can dim it with PWM
-persistent int LSENS = 2;
-persistent int RSENS = 3;
-
-// ---- config: ---
-persistent int MOTOR_R_SPEED = 50; // adjust these to fix drift
-persistent int MOTOR_L_SPEED = 50;
-persistent int DEBUG_MODE = 1; //beep to indicate states?
-
-// ----- variables: -----
-persistent int LIGHT_POWER = 40; // configure with light_config()
-persistent int L_THRESH = 30; //configure with sens_config()
-persistent int R_THRESH = 31; //configure with sens_config()
-
 void main() {
-	start_process(adj_motor());
+	int adj = start_process(adj_motor());
+	int pauser = start_process(pauseListener());
 	light_on();
-	closefollow2();
+
+	sideStraddle();
+
+	kill(pauser);
+	kill(adj);
+	light_off();
 }
 
-void oldMain() {
-	light_on();
-	bounce();
-}
-
-void adj_motor() {
-	while (1) {
-		MOTOR_L_SPEED = (int)((float)knob()/2.55);
-		MOTOR_R_SPEED = (int)((float)knob()/2.55);
-		printf("%d\n",knob());
-		defer();
-	}
-}
-
-void closefollow2() {
+int abort = 0;
+void sideStraddle() {
 	beep();
-	//printf("LT: %d\nRT: %d",L_THRESH,R_THRESH);
 	sleep(1.5);
 	while(!stop_button()) {
+		if (abort) {
+			break;
+		}
 		if (tapeR() && !tapeL()) {
 			forward();
 		}
@@ -53,88 +31,44 @@ void closefollow2() {
 			left();
 		}
 	}
-	ao();
+	stop();
 }
 
-void closefollow() {
-	beep();
-	//printf("LT: %d\nRT: %d",L_THRESH,R_THRESH);
-	sleep(1.5);
-	while(!stop_button()) {
-		if ((float)(int)seconds() == seconds()) {
-			printf("L:%d | R:%d",tapeL(),tapeR());
-		}
-		if (tapeL() && tapeR()) {
-			forward();
-		} else if (tapeL() && !tapeR()) {
-			left();
-		} else if (!tapeL() && tapeR()) {
-			right();
-		} else if (!tapeL() && !tapeR()) { //we're lost!
-			backward();
-			// keep going in whatever direction we were going
-			// we could have left the maze though, so that'd be good
-		}
-	}
-	ao();
-}
-
-// algorithm to "bounce" two widely set sensors off of a line in between them.
-// we'll use integer states to keep track of what we're doing.
-// Might make too many comparisons to be fast; will optimize if needed.
-
-// when we hit the line with one of the sensors, we turn until both sensors are
-// on the line, and then turn the other way until both sensors are on the line,
-// and then turn the other way...
-// Using states should make saying "turn until we're both on the line again"
-// easier, since we need the sensor to leave the line and then get back on it.
-int leftFromLine = 0; // turning left from a position wholly on the line
-int leftFromBlank = 1; // turning left from a position with sens off the line
-int rightFromLine = 2; // sure would be nice if enums were supported...
-int rightFromBlank = 3;
-int initialFwd = 4; // initial state, we don't know whch way to bounce.
-int s; // current state
-void bounce() {
-	// we start out with the line between the sensors
-	forward();
-	s = initialFwd;
-	if (DEBUG_MODE) { start_process(bounceTones()); }
-	while(!stop_button()) {
-		if (s == initialFwd) {
-			if (tapeL()&tapeR()) {
-				beep();
-				stop();
-				// we're starting near 90 degrees to the path, so we've got like
-				// a 50% chance of going off the line entirely.  Let's just quit
-				// so we can catch the robot and get back to testing.
+// Pauses system when stop button hit.  Call with minimal stack, exec time.
+// Hit pause button and release.  Press start to continue, stop to abort.
+void pauseListener() {
+	while(1) {
+		if (stop_button()) {
+			hog_processor();
+			stop();
+			set_beeper_pitch(400.); beeper_on();
+			while(stop_button()) {
+				hog_processor();
 			}
-			// tapeL()&&tapeR() is invalid here, so we'll just go left if so
-			if (tapeL()) {
-				s = leftFromLine;
-				left();
-			} else if (tapeR()) {
-				s = rightFromLine;
-				right();
+			beeper_off();
+			printf("\nPress start!\n");
+
+			while(!start_button()) {
+				hog_processor();
+				toggle_light();
+				if (stop_button()) {
+					abort = 1;
+					break;
+				}
+				msleep(250L);
 			}
-		}
-		if (s == leftFromLine && !tapeR()) {
-			s = leftFromBlank;
-		}
-		if (s == leftFromBlank && tapeR()) {
-			s = rightFromLine;
-			right();
-		}
-		if (s == rightFromLine && !tapeL()) {
-			s = rightFromBlank;
-		}
-		if (s == rightFromBlank && tapeL()) {
-			s = leftFromLine;
-			left();
+			defer();
 		}
 	}
 }
 
-/// we're in D major!
+int kill(int pid) { // enables laziness
+	return kill_process(pid);
+}
+
+/* Archived for reference (for music program later)
+
+// we're in D major!
 float tones[] = {293.7, 370.0, 440.0, 554.4, 587.3};
 void bounceTones() {
 	set_beeper_pitch(tones[s]);
@@ -146,3 +80,5 @@ void bounceTones() {
 	}
 	beeper_off();
 }
+
+*/

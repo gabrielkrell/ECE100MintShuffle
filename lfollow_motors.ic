@@ -10,11 +10,19 @@ void backward() {
 }
 void left() {
 	fdR();
-	bkL();
+	if (BACKUP_MODE) {
+		bkL();
+	} else {
+		off(MOTOR_L);
+	}
 }
 void right() {
 	fdL();
-	bkR();
+	if (BACKUP_MODE) {
+		bkR();
+	} else {
+		off(MOTOR_R);
+	}
 }
 void fdR() {
 	motor(MOTOR_R,MOTOR_R_SPEED);
@@ -31,4 +39,13 @@ void bkR() {
 void stop() {
 	off(MOTOR_L);
 	off(MOTOR_R);
+}
+
+void adj_motor() {
+	while (1) {	
+		MOTOR_L_SPEED = norm_knob();
+		MOTOR_R_SPEED = norm_knob();
+		printf("%d\n",norm_knob());
+		defer();
+	}
 }
