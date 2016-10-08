@@ -1,12 +1,14 @@
 void main() {
 	int adj = start_process(adj_motor());
 	int pauser = start_process(pauseListener());
+	int tetris = start_process(playTetris(TETRIS_BPM,1));
 	light_on();
 
 	sideStraddle();
 
 	kill(pauser);
 	kill(adj);
+	kill(tetris);
 	light_off();
 }
 
