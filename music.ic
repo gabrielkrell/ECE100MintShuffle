@@ -1,45 +1,45 @@
 /** music player in IC.
 
-	Song data was shamelessly solen from the source code of
-	Alex Tam's "Basic tones music player program", (c) 2012 GPL 2.1.  We thank
-	Alex for the time he spent transcribing.  Since we did not use his code for
-	anything other than the note/octave/duration values (originally stored as 
-	an array of "X-Y-Z" strings for use in his program), we have not included
-	the GNU GPL.  Consider this closer to a citation ;)
+ Song data was shamelessly solen from the source code of
+ Alex Tam's "Basic tones music player program", (c) 2012 GPL 2.1.  We thank
+ Alex for the time he spent transcribing.  Since we did not use his code for
+ anything other than the note/octave/duration values (originally stored as 
+ an array of "X-Y-Z" strings for use in his program), we have not included
+ the GNU GPL.  Consider this closer to a citation ;)
 
-	Music taken from:
-	Basic tones music player program
-	Copyright 2012 Alex Tam
-	http://inphamousdevelopment.wordpress.com/
+ Music taken from:
+ Basic tones music player program
+ Copyright 2012 Alex Tam
+ http://inphamousdevelopment.wordpress.com/
 **/
 
 int freqs[2][12] = {
-//   C,  C#,  D,  D#, E,  F, F#,  G, G#,  A, A#,  B
-    {262,277,294,311,330,349,370,392,415,440,466,494}, //4th octave
-    {523,554,587,622,659,698,740,784,831,880,932,988}  //5th octave
+	//   C,  C#,  D,  D#, E,  F, F#,  G, G#,  A, A#,  B
+	{262,277,294,311,330,349,370,392,415,440,466,494}, //4th octave
+	  {523,554,587,622,659,698,740,784,831,880,932,988}  //5th octave
 };
 
 float getFreq(int note, int octave) {
-    return (float)freqs[octave][note];
+	return (float)freqs[octave-4][note];
 }
 
 void playNote( int note, int octave, int denominator ) {
 	if(note==-1) {
-		sleep(1.0/(float)(bpm*denominator));
+		sleep(60.0/(float)(bpm*denominator));
 	} else{
-    	tone(getFreq(note,octave), 1.0/(float)(bpm*denominator));
-    }
+		tone(getFreq(note,octave), 60.0/(float)(bpm*denominator));
+	}
 }
 
-int TetrisNotes[58] = {4, 11, 0, 2, 0, 11, 9, 9, 0, 4, 2, 0, 11, 0, 2, 4, 0, 9,
-	9, 9, 11, 0, 2, 5, 9, 7, 5,	4, 0, 4, 2, 0, 11, 11, 0, 2, 4, 0, 9, 9, -1, 4, 
-	0, 2, 11, 0, 9, 8, 11, -1, 4, 0, 2, 11, 0, 4, 9, 8};
+int TetrisNotes[] = {4, 11, 0, 2, 0, 11, 9, 9, 0, 4, 2, 0, 11, 0, 2, 4, 0, 9,
+	  9, 9, 11, 0, 2, 5, 9, 7, 5, 4, 0, 4, 2, 0, 11, 11, 0, 2, 4, 0, 9, 9, -1, 4, 
+	  0, 2, 11, 0, 9, 8, 11, -1, 4, 0, 2, 11, 0, 4, 9, 8};
 int TetrisOctaves[] = {5, 4, 5, 5, 5, 4, 4, 4, 5, 5, 5, 5, 4, 5, 5, 5, 5, 4, 4,
-	4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 5, 5, 5, 5, 4, 4, 4, 5, 5, 5,
-	4, 5, 4, 4, 4, 4, 5, 5, 5, 4, 5, 5, 5, 5};
+	  4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 5, 5, 5, 5, 4, 4, 4, 5, 5, 5,
+	  4, 5, 4, 4, 4, 4, 5, 5, 5, 4, 5, 5, 5, 5};
 int TetrisDenominators[] = {4, 8, 8, 4, 8, 8, 4, 8, 8, 4, 8, 8, 4, 8, 4, 4, 4,
-	4, 8, 8, 8, 8, 4, 8, 4, 8, 8, 4, 8, 4, 8, 8, 4, 8, 8, 4, 4, 4, 4, 4, 1, 2,
-	2, 2, 2, 2, 2, 2, 4, 1, 2, 2, 2, 2, 4, 4, 2, 2};
+	  4, 8, 8, 8, 8, 4, 8, 4, 8, 8, 4, 8, 4, 8, 8, 4, 8, 8, 4, 4, 4, 4, 4, 1, 2,
+	  2, 2, 2, 2, 2, 2, 4, 1, 2, 2, 2, 2, 4, 4, 2, 2};
 void playTetris(int BPM, int loop) {
 	bpm = BPM;
 	while(1) {

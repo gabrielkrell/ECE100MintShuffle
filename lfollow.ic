@@ -1,12 +1,15 @@
 void main() {
 	int adj = start_process(adj_motor());
-	int pauser = start_process(pauseListener());
-	int tetris = start_process(playTetris(TETRIS_BPM,1));
+	//int pauser = start_process(pauseListener());
+	int tetris;
+	if (PLAY_TETRIS) {
+		tetris = start_process(playTetris(TETRIS_BPM,1));
+	}
 	light_on();
-
+	
 	sideStraddle();
-
-	kill(pauser);
+	
+	//kill(pauser);
 	kill(adj);
 	kill(tetris);
 	light_off();
@@ -49,7 +52,7 @@ void pauseListener() {
 			}
 			beeper_off();
 			printf("\nPress start!\n");
-
+			
 			while(!start_button()) {
 				hog_processor();
 				toggle_light();
@@ -73,14 +76,14 @@ int kill(int pid) { // enables laziness
 // we're in D major!
 float tones[] = {293.7, 370.0, 440.0, 554.4, 587.3};
 void bounceTones() {
-	set_beeper_pitch(tones[s]);
-	beeper_on();
-	defer();
-	while(!stop_button()) {
-		set_beeper_pitch(tones[s]);
-		defer();
-	}
-	beeper_off();
+ set_beeper_pitch(tones[s]);
+ beeper_on();
+ defer();
+ while(!stop_button()) {
+  set_beeper_pitch(tones[s]);
+  defer();
+ }
+ beeper_off();
 }
 
 */
