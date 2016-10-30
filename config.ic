@@ -10,15 +10,15 @@ int RSENS = 3;
 // --- modes: ---
 int DEBUG_MODE = 1; // beep to indicate states?
 int BACKUP_MODE = 1; // turn on the spot?
-int PLAY_TETRIS = 1; // we're assholes
+int PLAY_TETRIS = 0; // we're assholes
 int TETRIS_BPM = 60; // literally no idea what this should be
 
 // ---- config: ---
 int MOTOR_R_SPEED = 50; // adjust to fix drift
 int MOTOR_L_SPEED = 50;
 int LIGHT_POWER = 40; // configure with light_config()
-int L_THRESH = 30;  // configure with sens_config()
-int R_THRESH = 31;  // configure with sens_config()
+int L_THRESH = 125;  // configure with sens_config()
+int R_THRESH = 125;  // configure with sens_config()
 
 // ----- variables: -----
 int LIGHT_STATE = 0;

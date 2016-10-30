@@ -1,53 +1,58 @@
 // lfollow_motors.ic
 
+void forwardFor(float seconds) {
+    forward();
+    sleep(seconds);
+    stop();
+}
 void forward() {
-	fdL();
-	fdR();
+    fdL();
+    fdR();
 }
 void backward() {
-	bkL();
-	bkR();
+    bkL();
+    bkR();
 }
 void left() {
-	fd(MOTOR_R);
-	bk(MOTOR_L);
-//    fdR();
-//    if (BACKUP_MODE) {
-//        bkL();
-//    } else {
-//        off(MOTOR_L);
-//    }
+    fd(MOTOR_R);
+    bk(MOTOR_L);
+    //    fdR();
+    //    if (BACKUP_MODE) {
+    //        bkL();
+    //    } else {
+    //        off(MOTOR_L);
+    //    }
 }
 void right() {
-	fdL();
-	if (BACKUP_MODE) {
-		bkR();
-	} else {
-		off(MOTOR_R);
-	}
+    fdL();
+    if (BACKUP_MODE) {
+        bkR();
+    } else {
+        off(MOTOR_R);
+    }
 }
 void fdR() {
-	motor(MOTOR_R,MOTOR_R_SPEED);
+    motor(MOTOR_R,MOTOR_R_SPEED);
 }
 void fdL() {
-	motor(MOTOR_L,MOTOR_L_SPEED);
+    motor(MOTOR_L,MOTOR_L_SPEED);
 }
 void bkL() {
-	motor(MOTOR_L,-1*MOTOR_L_SPEED);
+    motor(MOTOR_L,-1*MOTOR_L_SPEED);
 }
 void bkR() {
-	motor(MOTOR_R,-1*MOTOR_R_SPEED);
+    motor(MOTOR_R,-1*MOTOR_R_SPEED);
 }
 void stop() {
-	off(MOTOR_L);
-	off(MOTOR_R);
+    off(MOTOR_L);
+    off(MOTOR_R);
 }
 
 void adj_motor() {
-	while (1) { 
-		MOTOR_L_SPEED = norm_knob();
-		MOTOR_R_SPEED = norm_knob();
-		printf("%d\n",norm_knob());
-		defer();
-	}
+    while (1) { 
+        MOTOR_L_SPEED = norm_knob();
+        MOTOR_R_SPEED = norm_knob();
+        //printf("%d\n",norm_knob());
+        defer();
+    }
 }

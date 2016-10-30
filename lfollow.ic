@@ -1,89 +1,68 @@
 void main() {
-	int adj = start_process(adj_motor());
-	//int pauser = start_process(pauseListener());
-	int tetris;
-	if (PLAY_TETRIS) {
-		tetris = start_process(playTetris(TETRIS_BPM,1));
-	}
-	light_on();
-	
-	sideStraddle();
-	
-	//kill(pauser);
-	kill(adj);
-	kill(tetris);
-	light_off();
+    int adj = start_process(adj_motor());
+    //int pauser = start_process(pauseListener());
+    int tetris;
+    if (PLAY_TETRIS) {
+        tetris = start_process(playTetris(TETRIS_BPM,1));
+    }
+    light_on();
+         shuffleShell();
+    
+    //kill(pauser);
+    kill(adj);
+    kill(tetris);
+    light_off();
 }
 
-int abort = 0;
-void sideStraddle() {
-	beep();
-	sleep(1.5);
-	while(!stop_button()) {
-		if (abort) {
-			break;
-		}
-		if (tapeR() && !tapeL()) {
-			forward();
-		}
-		if (!tapeR() && !tapeL()) {
-			right();
-		}
-		if (tapeR() && tapeL()) {
-			left();
-		}
-		if (!tapeR() && tapeL()) {
-			left();
-		}
-	}
-	stop();
+int pid;
+void mintShuffle() {
+    while(!start_button()) {
+        // wait for start button
+    }
+    beep();
+    sleep(1.5);
+    
+    //main routine logic
+    forwardFor(1.0);
+    
+    pid = start_process(followLine());
+    sleep(2.);
+    kill(pid);
+    
+    stop();
 }
 
-// Pauses system when stop button hit.  Call with minimal stack, exec time.
-// Hit pause button and release.  Press start to continue, stop to abort.
-void pauseListener() {
-	while(1) {
-		if (stop_button()) {
-			hog_processor();
-			stop();
-			set_beeper_pitch(400.); beeper_on();
-			while(stop_button()) {
-				hog_processor();
-			}
-			beeper_off();
-			printf("\nPress start!\n");
-			
-			while(!start_button()) {
-				hog_processor();
-				toggle_light();
-				if (stop_button()) {
-					abort = 1;
-					break;
-				}
-				msleep(250L);
-			}
-			defer();
-		}
-	}
+void shuffleShell() {
+    int ms = start_process(mintShuffle());
+    while(!stop_button()) {
+        // wait for early termination
+    }
+    kill(ms);
+}
+
+void followLineFor(float seconds) {
+    int pid = start_process(followLine());
+    sleep(seconds);
+    kill(pid);
+}
+
+void followLine() {
+    while (1) {
+        if (tapeR() && !tapeL()) {
+            forward();
+        }
+        if (!tapeR() && !tapeL()) {
+            right();
+        }
+        if (tapeR() && tapeL()) {
+            left();
+        }
+        if (!tapeR() && tapeL()) {
+            left();
+        }
+    }
 }
 
 int kill(int pid) { // enables laziness
-	return kill_process(pid);
+    return kill_process(pid);
 }
-
-/* Archived for reference (for music program later)
-
-// we're in D major!
-float tones[] = {293.7, 370.0, 440.0, 554.4, 587.3};
-void bounceTones() {
- set_beeper_pitch(tones[s]);
- beeper_on();
- defer();
- while(!stop_button()) {
-  set_beeper_pitch(tones[s]);
-  defer();
- }
- beeper_off();
-}
-
-*/
