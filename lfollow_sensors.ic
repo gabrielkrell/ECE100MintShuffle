@@ -1,4 +1,10 @@
-// lfollow_sensors.ic
+/** File: lfollow_sensors.ic
+	Purpose: Subroutines for sensor control and configuration.
+			 Light sensors, "headlamp", and knob motor config.
+	Parameters: See config.ic
+	Author: Gabriel Krell
+	Initial commit date: 9/30
+**/
 
 int tapeR() {
 	return analog(RSENS) < R_THRESH;

@@ -1,68 +1,75 @@
+/** File: lfollow.ic
+	Purpose: Main code.  Contains high-evel routines and main().
+	Parameters: See config.ic
+	Author: Gabriel Krell
+	Initial commit date: 9/30
+**/
+
 void main() {
-    int adj = start_process(adj_motor());
-    //int pauser = start_process(pauseListener());
-    int tetris;
-    if (PLAY_TETRIS) {
-        tetris = start_process(playTetris(TETRIS_BPM,1));
-    }
-    light_on();
-         shuffleShell();
-    
-    //kill(pauser);
-    kill(adj);
-    kill(tetris);
-    light_off();
+	int adj = start_process(adj_motor());
+	//int pauser = start_process(pauseListener());
+	int tetris;
+	if (PLAY_TETRIS) {
+		tetris = start_process(playTetris(TETRIS_BPM,1));
+	}
+	light_on();
+		 shuffleShell();
+	
+	//kill(pauser);
+	kill(adj);
+	kill(tetris);
+	light_off();
 }
 
 int pid;
 void mintShuffle() {
-    while(!start_button()) {
-        // wait for start button
-    }
-    beep();
-    sleep(1.5);
-    
-    //main routine logic
-    forwardFor(1.0);
-    
-    pid = start_process(followLine());
-    sleep(2.);
-    kill(pid);
-    
-    stop();
+	while(!start_button()) {
+		// wait for start button
+	}
+	beep();
+	sleep(1.5);
+	
+	//main routine logic
+	forwardFor(1.0);
+	
+	pid = start_process(followLine());
+	sleep(2.);
+	kill(pid);
+	
+	stop();
 }
 
 void shuffleShell() {
-    int ms = start_process(mintShuffle());
-    while(!stop_button()) {
-        // wait for early termination
-    }
-    kill(ms);
+	int ms = start_process(mintShuffle());
+	while(!stop_button()) {
+		// wait for early termination
+	}
+	kill(ms);
 }
 
 void followLineFor(float seconds) {
-    int pid = start_process(followLine());
-    sleep(seconds);
-    kill(pid);
+	int pid = start_process(followLine());
+	sleep(seconds);
+	kill(pid);
 }
 
 void followLine() {
-    while (1) {
-        if (tapeR() && !tapeL()) {
-            forward();
-        }
-        if (!tapeR() && !tapeL()) {
-            right();
-        }
-        if (tapeR() && tapeL()) {
-            left();
-        }
-        if (!tapeR() && tapeL()) {
-            left();
-        }
-    }
+	while (1) {
+		if (tapeR() && !tapeL()) {
+			forward();
+		}
+		if (!tapeR() && !tapeL()) {
+			right();
+		}
+		if (tapeR() && tapeL()) {
+			left();
+		}
+		if (!tapeR() && tapeL()) {
+			left();
+		}
+	}
 }
 
 int kill(int pid) { // enables laziness
-    return kill_process(pid);
+	return kill_process(pid);
 }

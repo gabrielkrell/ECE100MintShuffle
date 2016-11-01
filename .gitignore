@@ -1,2 +1,0 @@
-temp.ic 
-#loading from .lis probably works, but everything still has to be stuck into a temp file to check it with the IC compiler.

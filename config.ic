@@ -1,4 +1,9 @@
-// configuration variables, etc. go here.
+/** File: config.ic
+	Purpose: Main configuration file for program.
+	Parameters: See file contents.
+	Author: Gabriel Krell
+	Initial commit date: 9/30
+**/
 
 // ---- ports: ----
 int MOTOR_R = 1;
