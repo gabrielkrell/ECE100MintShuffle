@@ -14,58 +14,66 @@ int tapeL() {
 	return analog(LSENS) < L_THRESH;
 }
 
-
-void sens_config() {
-	int tapeValL;
-	int tapeValR;
-	int offValL;
-	int offValR;
-
-	light_on();
-	
-	confirm_sens("put L over tape LSENS = %d\n",LSENS,0);
-	tapeValL = analog(LSENS);
-	
-	confirm_sens("take L off tape LSENS = %d\n",LSENS,0);
-	offValL = analog(LSENS);
-	
-	confirm_sens("put R over tape LSENS = %d\n",RSENS,0);
-	tapeValR = analog(RSENS);
-	
-	confirm_sens("take R off tape LSENS = %d\n",RSENS,0);
-	offValR = analog(RSENS);
-	
-	L_THRESH = (tapeValL+offValL)/2;
-	R_THRESH = (tapeValR+offValR)/2;
-	printf("New thresholds: L:%d | R: %d\n",L_THRESH, R_THRESH);
-	
+int tapeValL = 0;
+int tapeValR = 0;
+int offValL = 0;
+int offValR = 0;
+void sens_config() {light_on();
+	 while(!start_button()) {
+		 printf("put L over tape\nLSENS = %d",analog(LSENS));
+		 sleep(.1);
+	 }
+	 tapeValL = analog(LSENS);
+	 beep();
+	 sleep(1.0);
+	 
+	 while(!start_button()) {
+		 printf("take L off tape\nLSENS = %d",analog(LSENS));
+		 sleep(.1);}
+	 offValL = analog(LSENS);
+	 beep();
+	 sleep(1.0);
+	 
+	 while(!start_button()) {
+		 printf("put R over tape\nRSENS = %d",analog(RSENS));
+		 sleep(.1);
+	 }
+	 tapeValR = analog(RSENS);
+	 beep();
+	 sleep(1.0);
+	 
+	 while(!start_button()) {
+		 printf("take R off tape\nRSENS = %d",analog(RSENS));
+		 sleep(.1);}
+	 offValR = analog(RSENS);
+	 beep();
+	 sleep(1.0);
+	 
+	 L_THRESH = (tapeValL+offValL)/2;
+	 R_THRESH = (tapeValR+offValR)/2;
+	 printf("New thresholds:\nL:%d | R: %d",L_THRESH, R_THRESH);
 }
 
 void light_config() {
-	int dispPID = start_process(lightDisplay());
 	while(start_button() || stop_button()) {} // release buttons before pressing
 	while(1){
 		motor(LIGHT,norm_knob());
+		printf("L: %d /R: %d KNOB: %d\n",analog(LSENS),analog(RSENS),norm_knob());
+		sleep(0.25);
 		if (start_button()) {
 			LIGHT_POWER = norm_knob();
-			kill_process(dispPID);
 			printf("LPOW set to %d",LIGHT_POWER);
 			tone(500.0,0.3);
 			break;
 		}
 		if (stop_button()) {
 			beep();
-			kill_process(dispPID);
 			break;
 		}
 	}
 	printf("\n\n");
 }
 
-void lightDisplay() {
-	printf("L: %d /R: %d KNOB: %d\n",analog(LSENS),analog(RSENS),norm_knob());
-	msleep(100L);
-}
 
 void light_on() {
 	motor(LIGHT,LIGHT_POWER);

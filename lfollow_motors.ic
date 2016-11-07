@@ -5,8 +5,18 @@
 	Initial commit date: 9/30
 **/
 
+void scaleSpeedBy(float val) {
+	MOTOR_L_SPEED = (int) (val * (float)MOTOR_L_SPEED);
+	MOTOR_R_SPEED = (int) (val * (float)MOTOR_R_SPEED);
+}
+
 void forwardFor(float seconds) {
 	forward();
+	sleep(seconds);
+	stop();
+}
+void backwardFor(float seconds) {
+	backward();
 	sleep(seconds);
 	stop();
 }
@@ -19,17 +29,27 @@ void backward() {
 	bkR();
 }
 
-/*left turn is full power instead of respecting motor speed
-  to avoid rolling over the line too fast when running followLine(). */
-void left() {
+/*Hard turns are full power instead of respecting motor speed
+  to avoid rolling over the line too fast when running followLine().
+  They do not respect BACKUP_MODE. */
+void hardLeft() {
 	fd(MOTOR_R);
 	bk(MOTOR_L);
-	//    fdR();
-	//    if (BACKUP_MODE) {
-	//        bkL();
-	//    } else {
-	//        off(MOTOR_L);
-	//    }
+}
+void hardRight() {
+	fd(MOTOR_L);
+	bk(MOTOR_R);
+}
+
+
+// use for general navigation, not line following
+void left() {
+	   fdR();
+	   if (BACKUP_MODE) {
+		   bkL();
+	   } else {
+		   off(MOTOR_L);
+	   }
 }
 void right() {
 	fdL();
@@ -60,7 +80,7 @@ void adj_motor() {
 	while (1) { 
 		MOTOR_L_SPEED = norm_knob();
 		MOTOR_R_SPEED = norm_knob();
-		//printf("%d\n",norm_knob());
+		printf("%d\n",norm_knob());
 		defer();
 	}
 }
