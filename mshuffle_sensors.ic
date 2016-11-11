@@ -1,4 +1,4 @@
-/** File: lfollow_sensors.ic
+/** File: mshuffle_sensors.ic
 	Purpose: Subroutines for sensor control and configuration.
 			 Light sensors, "headlamp", and knob motor config.
 	Parameters: See config.ic

@@ -1,4 +1,4 @@
-/** File: lfollow_motors.ic
+/** File: mshuffle_motors.ic
 	Purpose: Subroutines for motor control.
 	Parameters: See config.ic
 	Author: Gabriel Krell
