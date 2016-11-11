@@ -14,11 +14,13 @@ void forwardFor(float seconds) {
 	forward();
 	sleep(seconds);
 	stop();
+	deliberate();
 }
 void backwardFor(float seconds) {
 	backward();
 	sleep(seconds);
 	stop();
+	deliberate();
 }
 void forward() {
 	fdL();
@@ -28,6 +30,31 @@ void backward() {
 	bkL();
 	bkR();
 }
+void leftFor(float seconds) {
+	left();
+	sleep(seconds);
+	stop();
+	deliberate();
+}
+void hardLeftFor(float seconds) {
+	hardLeft();
+	sleep(seconds);
+	stop();
+	deliberate();
+}
+void rightFor(float seconds) {
+	right();
+	sleep(seconds);
+	stop();
+	deliberate();
+}
+void hardRightFor(float seconds) {
+	hardRight();
+	sleep(seconds);
+	stop();
+	deliberate();
+}
+
 
 /*Hard turns are full power instead of respecting motor speed
   to avoid rolling over the line too fast when running followLine().
@@ -83,4 +110,25 @@ void adj_motor() {
 		printf("%d\n",norm_knob());
 		defer();
 	}
+}
+
+/* "Deliberate mode" briefly pauses the robot in place after movement
+	actions, to avoid rolling stops and strange turns.  It can be
+	disabled for just the next action with fastNext() or for an
+	arbitrary number of actions with fastNextN().	*/
+void deliberate() {
+	if (DELIBERATE) {
+		if (fast_actions_remaining) {
+			fast_actions_remaining--;
+		} else {
+			sleep(.5);
+		}
+	}
+	// gotta go fast
+}
+void fastNext() {
+	fast_actions_remaining++;
+}
+void fastNextN(int numFastActions) {
+	fast_actions_remaining+=numFastActions;
 }

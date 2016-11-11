@@ -42,46 +42,33 @@ void mintShuffle() {
 		sleep(1.5);
 	
 		forwardFor(2.5); // forward to halfway
-		sleep(.5);
 	
 		// 1st puck in
-	
+		fastNext();
 		backwardFor(.75); //leave puck, back up to line
-	
-		hardRight(); // turn ~45 degrees
-		sleep(.40);
-		stop(); 
-		sleep(.5);
+		hardRightFor(.4); // turn ~45 degrees
 	
 		scaleSpeedBy(.5);
 		followLineForL(2.3); // approach corner
 		scaleSpeedBy(2.);
-		sleep(.5);
 	
-		left();
-		sleep(.05);
-		stop();
-	
+		leftFor(.05);
+
+		fastNextN(2);
 		scaleSpeedBy(.5);
 		forwardFor(.5);
-		right();
-		sleep(.25);
+		rightFor(.25);
 		forwardFor(2.);
+		scaleSpeedBy(2.);
 	
 		// second puck in
 	
-		scaleSpeedBy(2.);
-		stop();
-		
 		backwardFor(.5);
-		sleep(.5);
-		
 		
 		// in progress:
-		left();
-		sleep(.25); // fix this so that it goes along the side
-		forward();
-		sleep(1.5);
+		fastNextN(2);
+		leftFor(.25);  // fix this so that it goes along the side
+		forwardFor(1.5);
 		beep();
 		motor(MOTOR_L,MOTOR_L_SPEED/2);
 		sleep(.5);
@@ -105,12 +92,14 @@ void followLineForR(float seconds) {
 	LINE_FOLLOW_SIDE = 1;
 	followLineFor(seconds);
 	LINE_FOLLOW_SIDE = cached_mode;
+	deliberate();
 }
 void followLineForL(float seconds) {
 	int cached_mode = LINE_FOLLOW_SIDE;
 	LINE_FOLLOW_SIDE = 0;
 	followLineFor(seconds);
 	LINE_FOLLOW_SIDE = cached_mode;
+	deliberate();
 }
 
 // run followLine for a length of time
@@ -119,6 +108,7 @@ void followLineFor(float seconds) {
 	sleep(seconds);
 	kill(pid);
 	stop();
+	deliberate();
 }
 
 // follow a tape line on the ground
