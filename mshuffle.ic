@@ -111,31 +111,27 @@ void followLineFor(float seconds) {
 // follow a tape line on the ground
 void followLine() {
 	if (LINE_FOLLOW_SIDE) { // follow on the right side
-		if (tapeR() && !tapeL()) {
-			hardRight();
-		}
-		if (!tapeR() && !tapeL()) {
-			left();
-		}
-		if (tapeR() && tapeL()) {
-			hardRight();
-		}
-		if (!tapeR() && tapeL()) {
-			forward();
+		while(1) {
+			if (tapeR()) {
+				hardRight();
+			} else{
+				if (tapeL()) {
+					forward();
+				} else {
+					left();
+				}
+			}
 		}
 	} else { // follow on the left side
 		while (1) {
-			if (tapeR() && !tapeL()) {
-				forward();
-			}
-			if (!tapeR() && !tapeL()) {
-				right();
-			}
-			if (tapeR() && tapeL()) {
+			if (tapeL()) {
 				hardLeft();
-			}
-			if (!tapeR() && tapeL()) {
-				hardLeft();
+			} else {
+				if (tapeR()) {
+					forward();
+				} else {
+					right();
+				}
 			}
 		}
 	}
