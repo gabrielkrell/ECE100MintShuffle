@@ -6,17 +6,13 @@
 **/
 
 void main() {
-	// int adj = start_process(adj_motor());
-	//int pauser = start_process(pauseListener());
 	int tetris;
 	if (PLAY_TETRIS) {
 		tetris = start_process(playTetris(TETRIS_BPM,1));
 	}
 	light_on();
 	shuffleShell();
-	
-	//kill(pauser);
-	// kill(adj);
+
 	kill(tetris);
 	light_off();
 }
@@ -80,6 +76,7 @@ void mintShuffle() {
 void shuffleShell() {
 	int ms = start_process(mintShuffle());
 	while(!stop_button()) {
+		defer();
 		// wait for early termination
 	}
 	kill(ms);

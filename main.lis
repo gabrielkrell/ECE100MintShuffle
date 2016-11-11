@@ -1,5 +1,5 @@
 config.ic
-lfollow.ic
-lfollow_motors.ic
-lfollow_sensors.ic
+mshuffle.ic
+mshuffle_motors.ic
+mshuffle_sensors.ic
 music.ic
