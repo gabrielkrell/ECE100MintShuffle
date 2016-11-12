@@ -18,14 +18,22 @@ void main() {
 }
 
 void mintShuffle() {
-	float num1;
-	float num2;
+	int home;
+	int away;
 	while (1) {
 		while (!start_button()) {
-			printf("%f\n",(float)knob()/40.);
+			if(norm_knob()>50) {
+				printf("\nhome");
+				home = 1;
+				away = 0;
+			} else {
+				printf("\naway");
+				home = 0;
+				away = 1;
+			}
 			sleep(.3);
 		}
-		num1 = (float)knob()/40.;
+		// num1 = (float)knob()/180.;
 		//     // beep();
 		//     // sleep(1.);
 		//     // while (!start_button()) {
@@ -35,9 +43,14 @@ void mintShuffle() {
 		//     // num2 = (float)knob()/40.;
 		
 		beep();
-		sleep(1.5);
-	
-		forwardFor(2.5); // forward to halfway
+		sleep(.5);
+		if (away) {
+			MOTOR_L_SPEED+=5;
+		}
+		forwardFor(2.75); // forward to halfway
+		if (away) {
+			MOTOR_L_SPEED-=5;
+		}
 	
 		// 1st puck in
 		fastNext();
@@ -45,7 +58,7 @@ void mintShuffle() {
 		hardRightFor(.4); // turn ~45 degrees
 	
 		scaleSpeedBy(.5);
-		followLineForL(2.3); // approach corner
+		followLineForL(2.65); // approach corner
 		scaleSpeedBy(2.);
 	
 		leftFor(.05);
@@ -54,32 +67,57 @@ void mintShuffle() {
 		scaleSpeedBy(.5);
 		forwardFor(.5);
 		rightFor(.25);
-		forwardFor(2.);
+		forwardFor(2.5);
 		scaleSpeedBy(2.);
 	
 		// second puck in
-	
-		backwardFor(.5);
-		
-		// in progress:
-		fastNextN(2);
-		leftFor(.25);  // fix this so that it goes along the side
-		forwardFor(1.5);
-		beep();
-		motor(MOTOR_L,MOTOR_L_SPEED/2);
-		sleep(.5);
 		stop();
+		backwardFor(.5);
+		// playTetris(TETRIS_BPM,0);
 		
+		
+		// fastNextN(2);
+		// if (home) {
+		// 	leftFor(.28);
+		// } else {
+		// 	leftFor(.32);
+		// }
+		// forwardFor(1.5);
+		// beep();
+		// motor(MOTOR_L,MOTOR_L_SPEED/2);
+		// sleep(.5);
+		// stop();
+
+		// while(!tapeR()) {
+		// 	forward();
+		// }
+		// stop();
+		// // should be waiting on the center line here
+
+		// backwardFor(.1);
+		// scaleSpeedBy(.5);
+		// followLineForL(3.65);
+
+		// leftFor(.4);
+		// forwardFor(1.);
+		// followLineForL(3.2);
+		// scaleSpeedBy(2.);
+		// rightFor(.4);
+		// forwardFor(.7);
 	}
 }
 
 void shuffleShell() {
 	int ms = start_process(mintShuffle());
-	while(!stop_button()) {
+	float s = seconds();
+	while(!stop_button() && s + 60. > seconds()) {
 		defer();
 		// wait for early termination
 	}
 	kill(ms);
+	stop();
+	beep();
+	printf("\nTimed out: %f", seconds());
 }
 
 
