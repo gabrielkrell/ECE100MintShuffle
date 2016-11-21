@@ -21,8 +21,8 @@ int LINE_FOLLOW_SIDE = 0; // 0:left side, 1:right side
 int DELIBERATE = 1;	// pause after turning, moving, etc?
 
 // ---- config: ---
-int MOTOR_R_SPEED = 75; // adjust to fix drift
-int MOTOR_L_SPEED = 70;
+int MOTOR_R_SPEED = 100; // adjust to fix drift
+int MOTOR_L_SPEED = 100;
 int LIGHT_POWER = 12; // configure with light_config()
 int L_THRESH = 62;  // configure with sens_config()
 int R_THRESH = 61;  // configure with sens_config()
